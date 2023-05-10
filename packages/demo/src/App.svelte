@@ -28,6 +28,7 @@
   import trustModule from '@web3-onboard/trust'
   import frontierModule from '@web3-onboard/frontier'
   import cedeStoreModule from '@web3-onboard/cede-store'
+  import arcanaAuthModule from '@web3-onboard/arcana-auth'
   import {
     recoverAddress,
     arrayify,
@@ -133,6 +134,10 @@
       'DJuUOKvmNnlzy6ruVgeWYWIMKLRyYtjYa9Y10VCeJzWZcygDlrYLyXsBQjpJ2hxlBO9dnl8t9GmAC2qOP5vnIGo'
   })
 
+  const arcanaAuth = arcanaAuthModule({
+    clientID: 'xar_dev_2e9c00c6bc0d5d9512c6aae6b0cd9e417be738f9'
+  })
+
   const torus = torusModule()
   const infinityWallet = infinityWalletModule()
   const ledger = ledgerModule()
@@ -204,7 +209,8 @@
       frontier,
       phantom,
       xdefi,
-      cedeStore
+      cedeStore,
+      arcanaAuth
     ],
     transactionPreview,
     gas,

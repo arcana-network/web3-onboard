@@ -1,0 +1,20 @@
+{
+  "name": "@web3-onboard/arcana-auth",
+  "version": "2.0.0",
+  "license": "MIT",
+  "private": false,
+  "module": "dist/index.js",
+  "browser": "dist/index.js",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@arcana/auth": "^1.0.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.4"
+  }
+}
