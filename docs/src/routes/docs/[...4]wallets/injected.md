@@ -314,6 +314,7 @@ const injected = injectedModule({
 - ApexWallet - _Desktop_
 - BifrostWallet - _Desktop & Mobile_
 - Safeheron - _Desktop_
+- Arcana - _Desktop & Mobile_
 
 ## Build Environments
 
