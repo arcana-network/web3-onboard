@@ -25,7 +25,7 @@ yarn add @web3-onboard/core @arcana/auth @web3-onboard/arcana-auth
   <TabPanel value="npm">
 
 ```sh copy
-npm install  @web3-onboard/core @web3-onboard/arcana-auth
+npm install @web3-onboard/core @arcana/auth @web3-onboard/arcana-auth
 ```
 
   </TabPanel>
