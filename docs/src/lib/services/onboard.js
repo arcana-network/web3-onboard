@@ -51,10 +51,12 @@ const intiOnboard = async (theme) => {
   const { default: uauthModule } = await import('@web3-onboard/uauth')
   const { default: trustModule } = await import('@web3-onboard/trust')
   const { default: xdefiModule } = await import('@web3-onboard/xdefi')
+  const {default: arcanaModule } = await import('@web3-onboard/arcana-auth')
   const INFURA_ID = '8b60d52405694345a99bcb82e722e0af'
 
   const injected = injectedModule()
   const infinityWallet = infinityWalletModule()
+  const arcanaWallet = arcanaModule({clientId: 'xar_dev_2e9c00c6bc0d5d9512c6aae6b0cd9e417be738f9'})
   const coinbase = coinbaseModule()
   const dcent = dcentModule()
   const walletConnect = walletConnectModule({
@@ -112,6 +114,7 @@ const intiOnboard = async (theme) => {
     wallets: [
       injected,
       walletConnect,
+      arcanaWallet,
       coinbase,
       ledger,
       trezor,
