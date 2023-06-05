@@ -54,6 +54,7 @@ const intiOnboard = async (theme) => {
   const { default: cedeModule } = await import('@web3-onboard/cede-store')
   const { default: frameModule } = await import('@web3-onboard/frame')
   const { default: arcanaModule } = await import('@web3-onboard/arcana-auth')
+  const { default: venlyModule } = await import('@web3-onboard/venly')
   const INFURA_ID = '8b60d52405694345a99bcb82e722e0af'
 
   const injected = injectedModule()
@@ -111,6 +112,11 @@ const intiOnboard = async (theme) => {
 
   const frame = frameModule()
 
+  const venly = venlyModule({
+    clientId: 'blocknative',
+    environment: 'staging'
+  })
+
   return Onboard({
     wallets: [
       injected,
@@ -136,7 +142,8 @@ const intiOnboard = async (theme) => {
       keepkey,
       portis,
       frame,
-      infinityWallet
+      infinityWallet,
+      // venly
     ],
     chains: [
       {
