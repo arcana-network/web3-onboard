@@ -248,7 +248,7 @@
         id: '0x5',
         token: 'ETH',
         label: 'Goerli',
-        rpcUrl: `https://goerli.infura.io/v3/${infura_key}`
+        rpcUrl: 'https://ethereum-goerli.publicnode.com'
       },
       {
         id: '0x13881',
