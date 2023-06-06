@@ -10,12 +10,17 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w",
+    "docs": "typedoc --options typedoc.json",
+    "htmldocs": "typedoc --options typedochtml.json",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@arcana/auth": "^1.0.3"
   },
   "devDependencies": {
+    "typedoc": "^0.24.8",
+    "typedoc-plugin-extras": "^2.2.3",
+    "typedoc-plugin-markdown": "^3.12.1",
     "typescript": "^5.0.4"
   }
 }
