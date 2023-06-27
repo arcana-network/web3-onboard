@@ -33,6 +33,8 @@
     filter,
     firstValueFrom,
     mapTo,
+    shareReplay,
+    startWith,
     Subject,
     take,
     takeUntil
@@ -57,8 +59,11 @@
 
   export let autoSelect: ConnectOptions['autoSelect']
 
-  const { appMetadata, unstoppableResolution } = configuration
-  const { icon } = appMetadata || {}
+  const appMetadata$ = state
+    .select('appMetadata')
+    .pipe(startWith(state.get().appMetadata), shareReplay(1))
+
+  const { unstoppableResolution, device } = configuration
 
   const { walletModules, connect } = state.get()
   const cancelPreviousConnect$ = new Subject<void>()
@@ -137,7 +142,7 @@
         chains,
         BigNumber,
         EventEmitter,
-        appMetadata
+        appMetadata: $appMetadata$
       })
 
       const loadedIcon = await icon
@@ -414,6 +419,11 @@
   function scrollToTop() {
     scrollContainer && scrollContainer.scrollTo(0, 0)
   }
+
+  const isSafariMobile =
+    device.type === 'mobile' &&
+    device.browser.name &&
+    device.browser.name === 'Safari'
 </script>
 
 <style>
@@ -518,6 +528,11 @@
   .scroll-container::-webkit-scrollbar {
     display: none; /* Chrome, Safari and Opera */
   }
+  .mobile-safari {
+    /* Handles for Mobile Safari's floating Address Bar 
+    covering the bottom of the connect modal **/
+    padding-bottom: 80px;
+  }
 
   @media all and (min-width: 768px) {
     .container {
@@ -541,7 +556,7 @@
 
 {#if !autoSelect.disableModals}
   <Modal close={!connect.disableClose && close}>
-    <div class="container">
+    <div class="container" class:mobile-safari={isSafariMobile}>
       {#if connect.showSidebar}
         <Sidebar step={$modalStep$} />
       {/if}
@@ -550,11 +565,11 @@
         {#if windowWidth <= MOBILE_WINDOW_WIDTH}
           <div class="mobile-header">
             <div class="icon-container">
-              {#if icon}
-                {#if isSVG(icon)}
-                  {@html icon}
+              {#if $appMetadata$ && $appMetadata$.icon}
+                {#if isSVG($appMetadata$.icon)}
+                  {@html $appMetadata$.icon}
                 {:else}
-                  <img src={icon} alt="logo" />
+                  <img src={$appMetadata$.icon} alt="logo" />
                 {/if}
               {:else}
                 {@html defaultBnIcon}

@@ -399,6 +399,10 @@ jobs:
     docker:
       - image: cimg/node:16.13.1
     working_directory: ~/web3-onboard-monorepo/packages/arcana-auth
+  build-blocto:
+    docker:
+      - image: cimg/node:16.13.1
+    working_directory: ~/web3-onboard-monorepo/packages/blocto
     steps:
       - node-build-steps
   build-venly:
@@ -641,6 +645,10 @@ jobs:
     docker:
       - image: cimg/node:16.13.1
     working_directory: ~/web3-onboard-monorepo/packages/arcana-auth
+  build-staging-blocto:
+    docker:
+      - image: cimg/node:16.13.1
+    working_directory: ~/web3-onboard-monorepo/packages/blocto
     steps:
       - node-staging-build-steps
   build-staging-venly:
@@ -887,6 +895,12 @@ workflows:
           <<: *deploy_production_filters
       - build-staging-arcana-auth:
           <<: *deploy_staging_filters
+  blocto:
+    jobs:
+      - build-blocto:
+          <<: *deploy_production_filters
+      - build-staging-blocto:
+        <<: *deploy_staging_filters
   venly:
     jobs:
       - build-venly:

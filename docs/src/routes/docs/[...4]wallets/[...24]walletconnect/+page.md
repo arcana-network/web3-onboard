@@ -1,5 +1,5 @@
 ---
-title: Walletconnect
+title: WalletConnect
 ---
 
 # {$frontmatter.title}
@@ -54,7 +54,6 @@ type WalletConnectOptions = {
        * Project ID associated with [WalletConnect account](https://cloud.walletconnect.com)
        */
       projectId: string
-
       /**
        * Defaults to version: 1 - this behavior will be deprecated after the WalletConnect v1 sunset
        */
@@ -67,9 +66,9 @@ type WalletConnectOptions = {
        */
       requiredChains?: number[] | undefined
       /**
-       * `undefined` by default, see https://docs.walletconnect.com/2.0/web3modal/options
+       * `undefined` by default, see https://docs.walletconnect.com/2.0/web/walletConnectModal/options
        */
-      qrModalOptions?: Web3ModalConfig
+      qrModalOptions?: EthereumProviderOptions['qrModalOptions']
     }
 )
 ```
@@ -97,7 +96,11 @@ const wcV2InitOptions = {
   /**
    * Optional function to handle WalletConnect URI when it becomes available
    */
-  handleUri: (uri) => console.log(uri)
+  handleUri: (uri) => console.log(uri),
+  /**
+   * Chains required to be supported by all wallets connecting to your DApp
+   */
+  requiredChains: [1, 56]
 }
 
 // initialize the module with options
@@ -113,7 +116,16 @@ const onboard = Onboard({
   wallets: [
     walletConnect
     //... other wallets
-  ]
+  ],
+  chains: [ // chains that are passed as optional chains to WC wallet after cleaning and parsing as number[]
+      {
+        id: '0x89',
+        token: 'MATIC',
+        label: 'Polygon',
+        rpcUrl: 'https://matic-mainnet.chainstacklabs.com'
+      }
+      // ...
+    ]
 })
 
 const connectedWallets = await onboard.connectWallet()

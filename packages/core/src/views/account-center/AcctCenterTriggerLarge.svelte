@@ -14,11 +14,14 @@
     SuccessStatusIcon
   } from '../shared/index.js'
   import { state } from '../../store/index.js'
-  import { configuration } from '../../configuration.js'
+  import { shareReplay, startWith } from 'rxjs'
 
   export let toggle: () => void
-  const { appMetadata } = configuration
-  const appIcon = (appMetadata && appMetadata.icon) || questionIcon
+
+  const appMetadata$ = state
+    .select('appMetadata')
+    .pipe(startWith(state.get().appMetadata), shareReplay(1))
+
   const chains = state.get().chains
 
   $: [primaryWallet] = $wallets$
@@ -143,7 +146,7 @@
 </style>
 
 <div
-  in:fade={{ duration: 250 }}
+  in:fade|local={{ duration: 250 }}
   out:fade={{ duration: 100 }}
   class="ac-trigger"
   on:click|stopPropagation={toggle}
@@ -157,7 +160,7 @@
           background={'white'}
           border="darkGreen"
           radius={8}
-          icon={appIcon}
+          icon={($appMetadata$ && $appMetadata$.icon) || questionIcon}
         />
       </div>
 
@@ -187,7 +190,7 @@
           : shortenedFirstAddress}
       </div>
       {#if firstAddressBalance}
-        <div in:fade class="balance">
+        <div in:fade|local class="balance">
           {firstAddressBalance.length > 7
             ? firstAddressBalance.slice(0, 7)
             : firstAddressBalance}

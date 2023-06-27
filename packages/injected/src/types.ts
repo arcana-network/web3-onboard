@@ -62,7 +62,28 @@ export enum ProviderIdentityFlag {
   SafePal = 'isSafePal',
   DeFiWallet = 'isDeficonnectProvider',
   Safeheron = 'isSafeheron',
-  Talisman = 'isTalisman'
+  Talisman = 'isTalisman',
+  OneKey = 'isOneKey'
+}
+
+
+/**
+ * The ProviderExternalUrl enum represents the external URLs associated
+ * with different injected providers. It is used to direct end users who
+ * do not have a wallet installed to the corresponding wallet installation page.
+ * For this to be displayed a dapp must set `displayUnavailable` 
+ * to an array (to specify displayed unavailable wallets) or 
+ * true (to display all unavailable wallets) and a user select that wallet.
+ */
+export enum ProviderExternalUrl {
+  Binance = 'https://www.bnbchain.org/ru/blog/binance-extension-wallet/',
+  Coinbase = 'https://www.coinbase.com/wallet/downloads',
+  MetaMask = 'https://metamask.io/download/',
+  OKXWallet = 'https://okx.com/download',
+  Phantom = 'https://phantom.app/download',
+  Talisman = 'https://www.talisman.xyz/',
+  Trust = 'https://trustwallet.com/download/',
+  OneKey = 'https://onekey.so/download/',
 }
 
 export enum ProviderLabel {
@@ -115,7 +136,8 @@ export enum ProviderLabel {
   SafePal = 'SafePal',
   DeFiWallet = 'DeFi Wallet',
   Safeheron = 'Safeheron',
-  Talisman = 'Talisman'
+  Talisman = 'Talisman',
+  OneKey = 'OneKey'
 }
 
 export interface MeetOneProvider extends ExternalProvider {
@@ -147,7 +169,8 @@ export enum InjectedNameSpace {
   Frontier = 'frontier',
   DeFiConnectProvider = 'deficonnectProvider',
   Safeheron = 'safeheron',
-  Talisman = 'talismanEth'
+  Talisman = 'talismanEth',
+  OneKey = '$onekey'
 }
 
 export interface CustomWindow extends Window {
@@ -184,6 +207,9 @@ export interface CustomWindow extends Window {
   deficonnectProvider: InjectedProvider
   safeheron: InjectedProvider
   talismanEth: InjectedProvider
+  $onekey: {
+    ethereum: InjectedProvider
+  }
 }
 
 export type InjectedProvider = ExternalProvider &
@@ -207,10 +233,13 @@ export interface InjectedWalletOptions {
    * By default all wallets listed in ./packages/injected/
    * are included add them to here to remove them. */
   filter?: WalletFilters
-  /**Will display wallets to be selected even if they
+  /**If set to true: Will display all unavailable injected wallets even if they
    * are not currently available to the end user.
+   * If set to an array of ProviderLabel.walletLabel
+   * those wallets will be the only unavailable injected wallets shown
+   * For example [ProviderLabel.MetaMask, ProviderLabel.Trust] 
    */
-  displayUnavailable?: boolean
+  displayUnavailable?: boolean | string[]
   /**A function that allows for customizing the message to be displayed if the wallet
    * is unavailable
    */
@@ -223,4 +252,9 @@ export interface InjectedWalletModule extends WalletModule {
   injectedNamespace: InjectedNameSpace
   checkProviderIdentity: (helpers: { provider: any; device: Device }) => boolean
   platforms: Platform[]
+  /**  
+   * A Url to link users to a download page for the wallet 
+   * to be shown if not installed or available on the browser
+  */
+  externalUrl?: string
 }

@@ -28,6 +28,7 @@
   import phantomModule from '@web3-onboard/phantom'
   import trustModule from '@web3-onboard/trust'
   import frontierModule from '@web3-onboard/frontier'
+  import bloctoModule from '@web3-onboard/blocto'
   import cedeStoreModule from '@web3-onboard/cede-store'
   import arcanaAuthModule from '@web3-onboard/arcana-auth'
   import venlyModule from '@web3-onboard/venly'
@@ -41,6 +42,7 @@
   import { share } from 'rxjs/operators'
   import VConsole from 'vconsole'
   import blocknativeIcon from './blocknative-icon.js'
+  import DappAuth from '@dapperlabs/dappauth';
 
   if (window.innerWidth < 700) {
     new VConsole()
@@ -71,9 +73,12 @@
   const injected = injectedModule({
     custom: [
       // include custom (not natively supported) injected wallet modules here
-    ]
-    // display all wallets even if they are unavailable
-    // displayUnavailable: true
+    ],
+    // display all unavailable injected wallets
+    // displayUnavailable: true,
+    // ||
+    // display specific unavailable wallets
+    displayUnavailable: [ProviderLabel.MetaMask, ProviderLabel.Trust],
     // but only show Binance and Bitski wallet if they are available
     // filter: {
     //   [ProviderLabel.Binance]: 'unavailable',
@@ -102,7 +107,10 @@
     //       .filter(wallet => wallet)
     //   )
     // }
-    // walletUnavailableMessage: wallet => `Oops ${wallet.label} is unavailable!`
+    // walletUnavailableMessage: wallet =>
+    //   wallet.externalUrl
+    //     ? `Oops ${wallet.label} is unavailable! Please <a href="${wallet.externalUrl}" target="_blank">install</a>`
+    //     : `Oops ${wallet.label} is unavailable!`
   })
 
   const coinbaseWallet = coinbaseModule()
@@ -121,7 +129,8 @@
         'imtoken',
         'pillar'
       ]
-    }
+    },
+    requiredChains:[1, 56]
   })
   const portis = portisModule({
     apiKey: 'b2b7586f-2b1e-4c30-a7fb-c2d1533b153b'
@@ -153,6 +162,7 @@
   const trust = trustModule()
   const frontier = frontierModule()
   const cedeStore = cedeStoreModule()
+  const blocto = bloctoModule()
 
   const trezorOptions = {
     email: 'test@test.com',
@@ -220,6 +230,7 @@
       frameWallet,
       cedeStore,
       arcanaAuth
+      blocto,
       venly
     ],
     transactionPreview,
@@ -455,20 +466,28 @@
     // if using ethers v6 this is:
     // ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any')
     const ethersProvider = new ethers.providers.Web3Provider(provider, 'any')
-
     const signer = ethersProvider?.getSigner()
     const addr = await signer?.getAddress()
     const signature = await signer?.signMessage(signMsg)
+    let verifySign = false;
+    let recoveredAddress = null;
 
-    const recoveredAddress = recoverAddress(
-      arrayify(hashMessage(signMsg)),
-      signature
-    )
-
-    if (recoveredAddress !== address) {
-      console.error(
-        "Signature failed. Recovered address doesn' match signing address."
+    try {
+      recoveredAddress = recoverAddress(
+        arrayify(hashMessage(signMsg)),
+        signature
       )
+      verifySign = recoveredAddress === addr
+    } catch (error) {
+      console.error('Error recovering addressL', error);
+      verifySign = false
+    }
+
+    // contract wallets verify EIP-1654
+    const verifySignBy1654 = new DappAuth(provider);
+    const isAuthorizedSigner = await verifySignBy1654.isAuthorizedSigner(signMsg, signature, address);
+    if (!verifySign && !isAuthorizedSigner) {
+      console.error("Signature failed. Recovered address doesn' match signing address.");
     }
 
     console.log({ signMsg, signature, recoveredAddress, addr })
@@ -692,7 +711,6 @@
           >
         </div>
         <div class="position-buttons">
- 
           <button
             on:click={() =>
               onboard.state.actions.updateAccountCenter({
@@ -728,6 +746,27 @@
               onboard.state.actions.updateAccountCenter({
                 minimal: true
               })}>Small Trigger</button
+          >
+          <button
+            on:click={() =>
+              onboard.state.actions.updateAppMetadata(
+              {
+                // Checkmark
+                icon: `<svg width="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.59 8.59L12 13.17L7.41 8.59L6 10L12 16L18 10L16.59 8.59Z" fill="currentColor"/></svg>`,
+                // Hourglass
+                logo: `<svg width="100%" height="100%" viewBox="0 0 12 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 0L0.0100002 6L4 10L0.0100002 14.01L0 20H12V14L8 10L12 6.01V0H0ZM10 14.5V18H2V14.5L6 10.5L10 14.5Z" fill="#929BED"/>
+                  </svg>`,
+                description: 'Updated Description!',
+                agreement: {
+                  version: '2.0.0',
+                  termsUrl: 'https://onboard.blocknative.com/',
+                  privacyUrl: 'https://onboard.blocknative.com/'
+                },
+                gettingStartedGuide: 'https://onboard.blocknative.com/',
+                explore: 'https://onboard.blocknative.com/'
+              }
+              )}>Update appMetadata</button
           >
         </div>
       </div>
