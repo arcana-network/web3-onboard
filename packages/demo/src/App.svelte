@@ -42,7 +42,7 @@
   import { share } from 'rxjs/operators'
   import VConsole from 'vconsole'
   import blocknativeIcon from './blocknative-icon.js'
-  import DappAuth from '@dapperlabs/dappauth';
+  import DappAuth from '@blocto/dappauth';
 
   if (window.innerWidth < 700) {
     new VConsole()
@@ -78,7 +78,7 @@
     // displayUnavailable: true,
     // ||
     // display specific unavailable wallets
-    displayUnavailable: [ProviderLabel.MetaMask, ProviderLabel.Trust],
+    displayUnavailable: [ProviderLabel.MetaMask, ProviderLabel.Trust]
     // but only show Binance and Bitski wallet if they are available
     // filter: {
     //   [ProviderLabel.Binance]: 'unavailable',
@@ -116,21 +116,8 @@
   const coinbaseWallet = coinbaseModule()
 
   const walletConnect = walletConnectModule({
-    connectFirstChainId: true,
-    version: 2,
     handleUri: uri => console.log(uri),
-    projectId: 'f6bd6e2911b56f5ac3bc8b2d0e2d7ad5',
-    qrcodeModalOptions: {
-      mobileLinks: [
-        'rainbow',
-        'metamask',
-        'argent',
-        'trust',
-        'imtoken',
-        'pillar'
-      ]
-    },
-    requiredChains:[1, 56]
+    projectId: 'f6bd6e2911b56f5ac3bc8b2d0e2d7ad5'
   })
   const portis = portisModule({
     apiKey: 'b2b7586f-2b1e-4c30-a7fb-c2d1533b153b'
@@ -151,7 +138,7 @@
 
   const torus = torusModule()
   const infinityWallet = infinityWalletModule()
-  const ledger = ledgerModule()
+  const ledger = ledgerModule({ projectId: 'f6bd6e2911b56f5ac3bc8b2d0e2d7ad5' })
   const keepkey = keepkeyModule()
   const keystone = keystoneModule()
   const gnosis = gnosisModule()
@@ -174,6 +161,7 @@
 
   const uauthOptions = {
     clientID: 'a25c3a65-a1f2-46cc-a515-a46fe7acb78c',
+    walletConnectProjectId: 'f6bd6e2911b56f5ac3bc8b2d0e2d7ad5',
     redirectUri: 'http://localhost:8080/',
     scope:
       'openid wallet email:optional humanity_check:optional profile:optional social:optional'
@@ -310,7 +298,7 @@
     ],
     connect: {
       // disableClose: true,
-      autoConnectLastWallet: true,
+      // removeWhereIsMyWalletWarning: true,
       autoConnectAllPreviousWallet: true
     },
     appMetadata: {
@@ -469,8 +457,8 @@
     const signer = ethersProvider?.getSigner()
     const addr = await signer?.getAddress()
     const signature = await signer?.signMessage(signMsg)
-    let verifySign = false;
-    let recoveredAddress = null;
+    let verifySign = false
+    let recoveredAddress = null
 
     try {
       recoveredAddress = recoverAddress(
@@ -479,15 +467,21 @@
       )
       verifySign = recoveredAddress === addr
     } catch (error) {
-      console.error('Error recovering addressL', error);
-      verifySign = false
+      console.error('Error recovering address', error)
     }
 
     // contract wallets verify EIP-1654
-    const verifySignBy1654 = new DappAuth(provider);
-    const isAuthorizedSigner = await verifySignBy1654.isAuthorizedSigner(signMsg, signature, address);
+    const verifySignBy1654 = new DappAuth(provider)
+    const isAuthorizedSigner = await verifySignBy1654.isAuthorizedSigner(
+      signMsg,
+      signature,
+      address
+    )
     if (!verifySign && !isAuthorizedSigner) {
-      console.error("Signature failed. Recovered address doesn' match signing address.");
+      console.error(
+        "Signature failed. Recovered address doesn' match signing address."
+      )
+      verifySign = recoveredAddress === addr
     }
 
     console.log({ signMsg, signature, recoveredAddress, addr })
@@ -670,31 +664,31 @@
             }}>Send Success Notification</button
           >
           <button
-          on:click={() =>
-            onboard.state.actions.customNotification({
-              message:
-                'This is a custom DApp success notification to use however you want',
-              autoDismiss: 0,
-              type: 'pending'
-            })}>Send Pending Notification</button
-        >
-        <button
-          on:click={() =>
-            onboard.state.actions.customNotification({
-              type: 'error',
-              message:
-                'This is a custom DApp Error notification to use however you want',
-              autoDismiss: 0
-            })}>Send Error Notification</button
-        >
-        <button
-          on:click={() =>
-            onboard.state.actions.customNotification({
-              message:
-                'This is a custom non-descript DApp notification to use however you want',
-              autoDismiss: 0
-            })}>Send DApp Notification</button
-        >
+            on:click={() =>
+              onboard.state.actions.customNotification({
+                message:
+                  'This is a custom DApp success notification to use however you want',
+                autoDismiss: 0,
+                type: 'pending'
+              })}>Send Pending Notification</button
+          >
+          <button
+            on:click={() =>
+              onboard.state.actions.customNotification({
+                type: 'error',
+                message:
+                  'This is a custom DApp Error notification to use however you want',
+                autoDismiss: 0
+              })}>Send Error Notification</button
+          >
+          <button
+            on:click={() =>
+              onboard.state.actions.customNotification({
+                message:
+                  'This is a custom non-descript DApp notification to use however you want',
+                autoDismiss: 0
+              })}>Send DApp Notification</button
+          >
         </div>
         <div class="switch-chain-container">
           <button on:click={() => onboard.setChain({ chainId: '0x1' })}
@@ -749,8 +743,7 @@
           >
           <button
             on:click={() =>
-              onboard.state.actions.updateAppMetadata(
-              {
+              onboard.state.actions.updateAppMetadata({
                 // Checkmark
                 icon: `<svg width="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.59 8.59L12 13.17L7.41 8.59L6 10L12 16L18 10L16.59 8.59Z" fill="currentColor"/></svg>`,
                 // Hourglass
@@ -765,8 +758,7 @@
                 },
                 gettingStartedGuide: 'https://onboard.blocknative.com/',
                 explore: 'https://onboard.blocknative.com/'
-              }
-              )}>Update appMetadata</button
+              })}>Update appMetadata</button
           >
         </div>
       </div>
