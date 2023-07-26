@@ -217,7 +217,7 @@
       xdefi,
       frameWallet,
       cedeStore,
-      arcanaAuth
+      arcanaAuth,
       blocto,
       venly
     ],
