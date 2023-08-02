@@ -5,7 +5,9 @@ title: Arcana Auth
 # {$frontmatter.title}
 
 :::admonition type=warning
-The module for connecting the Arcana wallet to web3-onboard is under development. 
+The module for connecting the Arcana wallet to web3-onboard is under development.
+
+To ensure proper functionality of the embedded Arcana wallet in the Arcana Auth SDK, it may be necessary to disable certain other wallets that operate as browser extensions.
 :::
 
 :::admonition type=tip

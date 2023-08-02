@@ -167,6 +167,10 @@ We recommend you add the [Core Repo](../../modules/core.md#install) and consider
 - [KeepKey](../../wallets/keepkey.md#install)
 - [D'cent](../../wallets/dcent.md#install)
 
+**Embedded Wallets**
+
+- [Arcana Auth](../../wallets/arcana.md#install)
+
 **Frameworks**
 
 - [React](../../modules/react.md#quickstart-with-injected-wallets-and-ethers-provider)
